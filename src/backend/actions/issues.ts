@@ -2,7 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 import { container } from "../container";
-import type { IssuePriority, IssueStatus } from "../core/issues/entities";
+import { IssueStatus, IssueStatus } from "../core/issues";
 
 // ============================================================================
 // Issue Server Actions
@@ -21,7 +21,7 @@ export async function createIssue(data: {
   assigneeId?: string;
 }) {
   const useCases = container.getIssueUseCases();
-  
+
   const result = await useCases.create.execute({
     title: data.title,
     description: data.description,
@@ -85,7 +85,7 @@ export async function updateIssue(
   }
 ) {
   const useCases = container.getIssueUseCases();
-  
+
   const result = await useCases.update.execute(id, data);
 
   if (result.success && result.data) {
@@ -102,7 +102,7 @@ export async function updateIssue(
  */
 export async function updateIssueStatus(id: string, status: IssueStatus) {
   const useCases = container.getIssueUseCases();
-  
+
   const result = await useCases.update.status(id, status);
 
   if (result.success && result.data) {
@@ -119,7 +119,7 @@ export async function updateIssueStatus(id: string, status: IssueStatus) {
  */
 export async function updateIssuePriority(id: string, priority: IssuePriority) {
   const useCases = container.getIssueUseCases();
-  
+
   const result = await useCases.update.priority(id, priority);
 
   if (result.success && result.data) {
@@ -135,7 +135,7 @@ export async function updateIssuePriority(id: string, priority: IssuePriority) {
  */
 export async function assignIssue(id: string, assigneeId: string | null) {
   const useCases = container.getIssueUseCases();
-  
+
   const result = await useCases.update.assignee(id, assigneeId);
 
   if (result.success) {
@@ -151,7 +151,7 @@ export async function assignIssue(id: string, assigneeId: string | null) {
  */
 export async function addLabelsToIssue(id: string, labelIds: string[]) {
   const useCases = container.getIssueUseCases();
-  
+
   const result = await useCases.update.addLabels(id, labelIds);
 
   if (result.success) {
@@ -167,7 +167,7 @@ export async function addLabelsToIssue(id: string, labelIds: string[]) {
  */
 export async function removeLabelsFromIssue(id: string, labelIds: string[]) {
   const useCases = container.getIssueUseCases();
-  
+
   const result = await useCases.update.removeLabels(id, labelIds);
 
   if (result.success) {
@@ -183,7 +183,7 @@ export async function removeLabelsFromIssue(id: string, labelIds: string[]) {
  */
 export async function deleteIssue(id: string) {
   const useCases = container.getIssueUseCases();
-  
+
   // Get issue first to know project for cache invalidation
   const issue = await useCases.read.byId(id);
   const result = await useCases.destroy.execute(id);
@@ -203,11 +203,11 @@ export async function deleteIssue(id: string) {
 export async function getIssueActivity(id: string) {
   const useCases = container.getIssueUseCases();
   const repo = container.getIssueRepository();
-  
+
   const issue = await repo.findById(id);
   if (!issue) {
     return [];
   }
-  
+
   return issue.activity || [];
 }
