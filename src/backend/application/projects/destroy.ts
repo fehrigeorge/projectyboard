@@ -3,14 +3,13 @@
  * When a project is deleted, existing issues become unassigned from the project.
  */
 
-import { createActivityEvent, type ActivityContext } from '@/backend/core/issues/activity'
 import type { IssueRepository } from '@/backend/ports/issue-repository'
 import type { ProjectRepository } from '@/backend/ports/project-repository'
 
 export type DestroyProjectDeps = {
 	projects: ProjectRepository
 	issues: IssueRepository
-	activityContext: ActivityContext
+	activityContext: { userId: string; userName: string }
 }
 
 export type DestroyProjectResult =
@@ -39,4 +38,38 @@ export async function destroyProject(
 	await deps.projects.delete(id)
 
 	return { success: true }
+}
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class DestroyProjectUseCase {
+	private projectRepo: ProjectRepository
+	private issueRepo: IssueRepository
+
+	constructor(projectRepo: ProjectRepository, issueRepo: IssueRepository) {
+		this.projectRepo = projectRepo
+		this.issueRepo = issueRepo
+	}
+
+	async execute(id: string): Promise<{
+		success: boolean
+		error?: string
+	}> {
+		const result = await destroyProject(
+			{
+				projects: this.projectRepo,
+				issues: this.issueRepo,
+				activityContext: { userId: 'system', userName: 'System' }
+			},
+			id
+		)
+
+		if (!result.success) {
+			return { success: false, error: 'Project not found' }
+		}
+
+		return { success: true }
+	}
 }

@@ -3,7 +3,7 @@
  * In-memory implementation for development and testing.
  */
 
-import type { ActivityEvent, Issue, IssueLabel, IssueStatus, PaginatedResult, Priority } from '@/backend/core/issues/entities'
+import type { ActivityEvent, Issue, IssueLabel, PaginatedResult } from '@/backend/core/issues/entities'
 import { formatIssueIdentifier } from '@/backend/core/issues/identifier'
 import type { CreateIssueInput, IssueFilters, IssueRepository, UpdateIssueInput } from '@/backend/ports/issue-repository'
 
@@ -351,4 +351,39 @@ export function resetMockIssueState(): void {
 
 export function getMockIssueState(): MockIssueState {
 	return state
+}
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class MockIssueRepository implements IssueRepository {
+	private repo: IssueRepository
+
+	constructor(
+		getLabels: () => IssueLabel[],
+		getProjects: () => Array<{ id: string; name: string; key: string }>
+	) {
+		this.repo = createMockIssueRepository(getLabels, getProjects)
+	}
+
+	list(filters?: IssueFilters): Promise<PaginatedResult<Issue>> {
+		return this.repo.list(filters)
+	}
+
+	getById(id: string): Promise<Issue | null> {
+		return this.repo.getById(id)
+	}
+
+	create(input: CreateIssueInput): Promise<Issue> {
+		return this.repo.create(input)
+	}
+
+	update(id: string, input: UpdateIssueInput): Promise<Issue> {
+		return this.repo.update(id, input)
+	}
+
+	delete(id: string): Promise<void> {
+		return this.repo.delete(id)
+	}
 }

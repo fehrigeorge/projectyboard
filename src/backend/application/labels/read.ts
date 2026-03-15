@@ -19,3 +19,50 @@ export async function readLabelById(
 ): Promise<Label | null> {
 	return deps.labels.getById(id)
 }
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class ReadLabelUseCase {
+	private labelRepo: LabelRepository
+
+	constructor(labelRepo: LabelRepository) {
+		this.labelRepo = labelRepo
+	}
+
+	async list(): Promise<{
+		success: boolean
+		data?: Label[]
+		error?: string
+	}> {
+		try {
+			const labels = await readLabels({ labels: this.labelRepo })
+			return { success: true, data: labels }
+		} catch (error) {
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : 'Failed to read labels'
+			}
+		}
+	}
+
+	async byId(id: string): Promise<{
+		success: boolean
+		data?: Label
+		error?: string
+	}> {
+		try {
+			const label = await readLabelById({ labels: this.labelRepo }, id)
+			if (!label) {
+				return { success: false, error: 'Label not found' }
+			}
+			return { success: true, data: label }
+		} catch (error) {
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : 'Failed to read label'
+			}
+		}
+	}
+}

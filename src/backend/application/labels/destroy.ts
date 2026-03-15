@@ -3,7 +3,7 @@
  * When a label is deleted, it is removed from all issues.
  */
 
-import { createLabelRemovedActivity, type ActivityContext } from '@/backend/core/issues/activity'
+import type { ActivityContext } from '@/backend/core/issues/activity'
 import type { IssueRepository } from '@/backend/ports/issue-repository'
 import type { LabelRepository } from '@/backend/ports/label-repository'
 
@@ -41,4 +41,38 @@ export async function destroyLabel(
 	await deps.labels.delete(id)
 
 	return { success: true }
+}
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class DestroyLabelUseCase {
+	private labelRepo: LabelRepository
+	private issueRepo: IssueRepository
+
+	constructor(labelRepo: LabelRepository, issueRepo: IssueRepository) {
+		this.labelRepo = labelRepo
+		this.issueRepo = issueRepo
+	}
+
+	async execute(id: string): Promise<{
+		success: boolean
+		error?: string
+	}> {
+		const result = await destroyLabel(
+			{
+				labels: this.labelRepo,
+				issues: this.issueRepo,
+				activityContext: { userId: 'system', userName: 'System' }
+			},
+			id
+		)
+
+		if (!result.success) {
+			return { success: false, error: 'Label not found' }
+		}
+
+		return { success: true }
+	}
 }

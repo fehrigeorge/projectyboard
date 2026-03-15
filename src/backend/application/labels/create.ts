@@ -42,3 +42,32 @@ export async function createLabel(
 
 	return { success: true, label }
 }
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class CreateLabelUseCase {
+	private labelRepo: LabelRepository
+
+	constructor(labelRepo: LabelRepository) {
+		this.labelRepo = labelRepo
+	}
+
+	async execute(command: CreateLabelCommand): Promise<{
+		success: boolean
+		data?: Label
+		error?: string
+	}> {
+		const result = await createLabel({ labels: this.labelRepo }, command)
+
+		if (!result.success) {
+			return {
+				success: false,
+				error: result.validation.errors.map((e) => e.message).join(', ')
+			}
+		}
+
+		return { success: true, data: result.label }
+	}
+}
