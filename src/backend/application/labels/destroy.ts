@@ -42,3 +42,37 @@ export async function destroyLabel(
 
 	return { success: true }
 }
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class DestroyLabelUseCase {
+	private labelRepo: LabelRepository
+	private issueRepo: IssueRepository
+
+	constructor(labelRepo: LabelRepository, issueRepo: IssueRepository) {
+		this.labelRepo = labelRepo
+		this.issueRepo = issueRepo
+	}
+
+	async execute(id: string): Promise<{
+		success: boolean
+		error?: string
+	}> {
+		const result = await destroyLabel(
+			{
+				labels: this.labelRepo,
+				issues: this.issueRepo,
+				activityContext: { userId: 'system', userName: 'System' }
+			},
+			id
+		)
+
+		if (!result.success) {
+			return { success: false, error: 'Label not found' }
+		}
+
+		return { success: true }
+	}
+}

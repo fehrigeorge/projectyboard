@@ -51,3 +51,32 @@ export async function createProject(
 
 	return { success: true, project }
 }
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class CreateProjectUseCase {
+	private projectRepo: ProjectRepository
+
+	constructor(projectRepo: ProjectRepository) {
+		this.projectRepo = projectRepo
+	}
+
+	async execute(command: CreateProjectCommand): Promise<{
+		success: boolean
+		data?: Project
+		error?: string
+	}> {
+		const result = await createProject({ projects: this.projectRepo }, command)
+
+		if (!result.success) {
+			return {
+				success: false,
+				error: result.validation.errors.map((e) => e.message).join(', ')
+			}
+		}
+
+		return { success: true, data: result.project }
+	}
+}

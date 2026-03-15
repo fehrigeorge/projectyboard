@@ -40,3 +40,37 @@ export async function destroyProject(
 
 	return { success: true }
 }
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class DestroyProjectUseCase {
+	private projectRepo: ProjectRepository
+	private issueRepo: IssueRepository
+
+	constructor(projectRepo: ProjectRepository, issueRepo: IssueRepository) {
+		this.projectRepo = projectRepo
+		this.issueRepo = issueRepo
+	}
+
+	async execute(id: string): Promise<{
+		success: boolean
+		error?: string
+	}> {
+		const result = await destroyProject(
+			{
+				projects: this.projectRepo,
+				issues: this.issueRepo,
+				activityContext: { userId: 'system', userName: 'System' }
+			},
+			id
+		)
+
+		if (!result.success) {
+			return { success: false, error: 'Project not found' }
+		}
+
+		return { success: true }
+	}
+}

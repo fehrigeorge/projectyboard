@@ -53,3 +53,35 @@ export function resetMockLabelState(): void {
 export function getMockLabels(): Label[] {
 	return labels
 }
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class MockLabelRepository implements LabelRepository {
+	private repo: LabelRepository
+
+	constructor() {
+		this.repo = createMockLabelRepository()
+	}
+
+	list(): Promise<Label[]> {
+		return this.repo.list()
+	}
+
+	getById(id: string): Promise<Label | null> {
+		return this.repo.getById(id)
+	}
+
+	getByIds(ids: string[]): Promise<Label[]> {
+		return this.repo.getByIds(ids)
+	}
+
+	create(input: CreateLabelInput): Promise<Label> {
+		return this.repo.create(input)
+	}
+
+	delete(id: string): Promise<void> {
+		return this.repo.delete(id)
+	}
+}

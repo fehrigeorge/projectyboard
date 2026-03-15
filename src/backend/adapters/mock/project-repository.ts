@@ -78,3 +78,39 @@ export function resetMockProjectState(): void {
 export function getMockProjects(): Project[] {
 	return projects
 }
+
+// ============================================================================
+// Class Wrapper for Container
+// ============================================================================
+
+export class MockProjectRepository implements ProjectRepository {
+	private repo: ProjectRepository
+
+	constructor() {
+		this.repo = createMockProjectRepository()
+	}
+
+	list(): Promise<Project[]> {
+		return this.repo.list()
+	}
+
+	getById(id: string): Promise<Project | null> {
+		return this.repo.getById(id)
+	}
+
+	getByKey(key: string): Promise<Project | null> {
+		return this.repo.getByKey(key)
+	}
+
+	getAllKeys(): Promise<string[]> {
+		return this.repo.getAllKeys()
+	}
+
+	create(input: CreateProjectInput): Promise<Project> {
+		return this.repo.create(input)
+	}
+
+	delete(id: string): Promise<void> {
+		return this.repo.delete(id)
+	}
+}
