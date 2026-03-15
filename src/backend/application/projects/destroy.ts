@@ -3,14 +3,13 @@
  * When a project is deleted, existing issues become unassigned from the project.
  */
 
-import { createActivityEvent, type ActivityContext } from '@/backend/core/issues/activity'
 import type { IssueRepository } from '@/backend/ports/issue-repository'
 import type { ProjectRepository } from '@/backend/ports/project-repository'
 
 export type DestroyProjectDeps = {
 	projects: ProjectRepository
 	issues: IssueRepository
-	activityContext: ActivityContext
+	activityContext: { userId: string; userName: string }
 }
 
 export type DestroyProjectResult =

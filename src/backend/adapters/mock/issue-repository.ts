@@ -3,7 +3,7 @@
  * In-memory implementation for development and testing.
  */
 
-import type { ActivityEvent, Issue, IssueLabel, IssueStatus, PaginatedResult, Priority } from '@/backend/core/issues/entities'
+import type { ActivityEvent, Issue, IssueLabel, PaginatedResult } from '@/backend/core/issues/entities'
 import { formatIssueIdentifier } from '@/backend/core/issues/identifier'
 import type { CreateIssueInput, IssueFilters, IssueRepository, UpdateIssueInput } from '@/backend/ports/issue-repository'
 
