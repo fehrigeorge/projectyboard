@@ -3,7 +3,7 @@
  * When a label is deleted, it is removed from all issues.
  */
 
-import { createLabelRemovedActivity, type ActivityContext } from '@/backend/core/issues/activity'
+import type { ActivityContext } from '@/backend/core/issues/activity'
 import type { IssueRepository } from '@/backend/ports/issue-repository'
 import type { LabelRepository } from '@/backend/ports/label-repository'
 
